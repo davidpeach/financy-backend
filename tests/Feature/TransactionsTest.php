@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Transaction;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Tests\TestCase;
@@ -16,7 +15,7 @@ class TransactionsTest extends TestCase
     /** @test */
     public function transactions_can_be_returned_in_order_of_newest_first()
     {
-        $this->be(User::factory()->create());
+        $this->signIn();
 
         Transaction::factory()
             ->count(5)
@@ -51,7 +50,7 @@ class TransactionsTest extends TestCase
     /** @test */
     public function single_transactions_can_be_created_manually()
     {
-        $this->be(User::factory()->create());
+        $this->signIn();
 
         $this->json('post', route('api.transaction.store'), [
             'amount' => '10.00',
@@ -81,7 +80,7 @@ class TransactionsTest extends TestCase
     /** @test */
     public function transactions_can_be_retrieved_based_on_a_start_date()
     {
-        $this->be(User::factory()->create());
+        $this->signIn();
 
         Transaction::factory()
             ->count(3)
