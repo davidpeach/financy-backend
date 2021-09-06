@@ -22,7 +22,7 @@ class CommitmentFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'recurring_date' => 1,
         ];
     }
 }
