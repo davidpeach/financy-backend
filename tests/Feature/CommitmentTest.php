@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Commitment;
-use App\Models\Transaction;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Tests\TestCase;
 
