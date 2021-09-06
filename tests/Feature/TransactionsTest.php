@@ -6,12 +6,9 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TransactionsTest extends TestCase
 {
-    use RefreshDatabase;
-
     /** @test */
     public function transactions_can_be_returned_in_order_of_newest_first()
     {

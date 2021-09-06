@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommitmentController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,4 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('auth')->group(function() {
     Route::get('/transactions', [TransactionController::class, 'index'])->name('api.transaction.index');
     Route::post('/transactions', [TransactionController::class, 'store'])->name('api.transaction.store');
+
+    Route::get('/commitments', [CommitmentController::class, 'index'])->name('api.commitment.index');
 });
