@@ -78,4 +78,26 @@ class TransactionsTest extends TestCase
         $response->assertStatus(401);
     }
 
+    /** @test */
+    public function transactions_can_be_retrieved_based_on_a_start_date()
+    {
+        $this->be(User::factory()->create());
+
+        Transaction::factory()
+            ->count(3)
+            ->state(new Sequence(
+                ['amount' => 2500, 'name' => '25 pound item', 'date' => new Carbon('1st January 2000 17:00:00')],
+                ['amount' => 7500, 'name' => '75 pound item', 'date' => new Carbon('5th January 2000 17:00:00')],
+                ['amount' => 1000, 'name' => '10 pound item', 'date' => new Carbon('10th January 2000 17:00:00')],
+            ))
+            ->create();
+
+        $response = $this->json('get', route('api.transaction.index', ['from' => '2000-01-05']));
+
+        $response->assertJson(['data' => [
+            ['amount' => '£10.00', 'name' => '10 pound item', 'date' => '10th January 2000 17:00:00'],
+            ['amount' => '£75.00', 'name' => '75 pound item', 'date' => '5th January 2000 17:00:00'],
+        ]]);
+    }
+
 }

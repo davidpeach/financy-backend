@@ -24,7 +24,7 @@ class Transaction extends Model
     public function setAmountAttribute(string|int $amount)
     {
         if (str_contains(haystack: $amount, needle: '.')) {
-             $amount = (int) str_replace(search: '.', replace: '', subject: $amount);
+            $amount = (int) str_replace(search: '.', replace: '', subject: $amount);
         }
 
         $this->attributes['amount'] = $amount;

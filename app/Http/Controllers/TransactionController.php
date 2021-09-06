@@ -8,10 +8,15 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $transactions = Transaction::orderBy('date', 'desc');
+
+        if ($request->has('from')) {
+            $transactions->where('date', '>=', $request->get('from'));
+        }
         return TransactionResource::collection(
-            Transaction::orderBy('date', 'desc')->get()
+            $transactions->get()
         );
     }
 
