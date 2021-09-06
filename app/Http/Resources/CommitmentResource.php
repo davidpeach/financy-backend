@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Utils\MoneyFormatter;
 use Illuminate\Http\Resources\Json\JsonResource;
-use NumberFormatter;
 
 class CommitmentResource extends JsonResource
 {
@@ -11,17 +11,7 @@ class CommitmentResource extends JsonResource
     {
         return [
             'name' => $this->name,
-            'amount' => $this->formatAsMoney($this->amount),
+            'amount' => MoneyFormatter::format($this->amount),
         ];
-    }
-
-    /**
-     * @param int $amountInPennies
-     * @return string
-     */
-    public function formatAsMoney(int $amountInPennies): string
-    {
-        $formatter = new NumberFormatter('en_GB', NumberFormatter::CURRENCY);
-        return $formatter->formatCurrency($amountInPennies/100, 'GBP');
     }
 }
