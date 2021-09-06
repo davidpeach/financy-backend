@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Tests\TestCase;
@@ -15,6 +16,8 @@ class TransactionsTest extends TestCase
     /** @test */
     public function transactions_can_be_returned_in_order_of_newest_first()
     {
+        $this->be(User::factory()->create());
+
         Transaction::factory()
             ->count(5)
             ->state(new Sequence(
@@ -35,6 +38,44 @@ class TransactionsTest extends TestCase
             ['amount' => '£10.00', 'name' => '10 pound item', 'date' => '10th January 2000 17:00:00'],
             ['amount' => '£25.00', 'name' => '25 pound item', 'date' => '1st January 2000 17:00:00'],
         ]]);
+    }
+
+    /** @test */
+    public function transactions_cannot_be_returned_to_guests()
+    {
+        $response = $this->json('get', route('api.transaction.index'));
+
+        $response->assertStatus(401);
+    }
+
+    /** @test */
+    public function single_transactions_can_be_created_manually()
+    {
+        $this->be(User::factory()->create());
+
+        $this->json('post', route('api.transaction.store'), [
+            'amount' => '10.00',
+            'name' => 'A 10 pound item',
+            'date' => '2021-09-06 07:55:00',
+        ]);
+
+        $this->assertDatabaseHas('transactions', [
+            'amount' => 1000,
+            'name' => 'A 10 pound item',
+            'date' => '2021-09-06 07:55:00',
+        ]);
+    }
+
+    /** @test */
+    public function transactions_cannot_be_created_be_guests()
+    {
+        $response = $this->json('post', route('api.transaction.store'), [
+            'amount' => '10.00',
+            'name' => 'A 10 pound item',
+            'date' => '2021-09-06 07:55:00',
+        ]);
+
+        $response->assertStatus(401);
     }
 
 }

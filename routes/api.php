@@ -19,4 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/transactions', [TransactionController::class, 'index'])->name('api.transaction.index');
+Route::middleware('auth')->group(function() {
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('api.transaction.index');
+    Route::post('/transactions', [TransactionController::class, 'store'])->name('api.transaction.store');
+});

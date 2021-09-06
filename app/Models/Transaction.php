@@ -9,5 +9,24 @@ class Transaction extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'amount',
+        'name',
+        'date',
+    ];
+
     protected $dates = ['date'];
+
+    /**
+     * @param string|int $amount
+     * Handling if amount comes through in a '10.00' format.
+     */
+    public function setAmountAttribute(string|int $amount)
+    {
+        if (str_contains(haystack: $amount, needle: '.')) {
+             $amount = (int) str_replace(search: '.', replace: '', subject: $amount);
+        }
+
+        $this->attributes['amount'] = $amount;
+    }
 }
