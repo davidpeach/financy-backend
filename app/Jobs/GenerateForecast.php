@@ -43,7 +43,6 @@ class GenerateForecast implements ShouldQueue
             ->each(function (Commitment $commitment) {
 
                 $fromDate = new Carbon($this->from->timestamp);
-//                $fromDate->startOfDay();
                 $fromDate->day = $commitment->recurring_date;
 
                 while ($fromDate <= $this->to) {
