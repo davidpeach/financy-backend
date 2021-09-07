@@ -35,31 +35,7 @@ class GenerateForecast implements ShouldQueue
         Commitment::orderBy('recurring_date', 'asc')
             ->get()
             ->each(function (Commitment $commitment) {
-
-                $start = now();
-                $position = new Carbon($start->timestamp);
-                $position->day = $commitment->recurring_date;
-
-                while ($position <= $this->until) {
-
-                    if ($this->isBeforeStart($start, $position)) {
-                        $position->addMonth();
-                        continue;
-                    }
-
-                    Transaction::create([
-                        'name' => $commitment->name,
-                        'amount' => $commitment->amount,
-                        'date' => $position,
-                    ]);
-
-                    $position->addMonth();
-                }
+                $commitment->generateTransactionsUntil($this->until);
             });
-    }
-
-    protected function isBeforeStart(Carbon $start, Carbon $position): bool
-    {
-        return $position < $start;
     }
 }
