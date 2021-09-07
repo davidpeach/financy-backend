@@ -16,19 +16,13 @@ class GenerateForecast implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public Carbon $from;
-
-    public Carbon $to;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Carbon $from, Carbon $to)
+    public function __construct(public Carbon $until)
     {
-        $this->from = $from;
-        $this->to = $to;
     }
 
     /**
@@ -42,19 +36,30 @@ class GenerateForecast implements ShouldQueue
             ->get()
             ->each(function (Commitment $commitment) {
 
-                $fromDate = new Carbon($this->from->timestamp);
-                $fromDate->day = $commitment->recurring_date;
+                $start = now();
+                $position = new Carbon($start->timestamp);
+                $position->day = $commitment->recurring_date;
 
-                while ($fromDate <= $this->to) {
+                while ($position <= $this->until) {
+
+                    if ($this->isBeforeStart($start, $position)) {
+                        $position->addMonth();
+                        continue;
+                    }
 
                     Transaction::create([
                         'name' => $commitment->name,
                         'amount' => $commitment->amount,
-                        'date' => $fromDate,
+                        'date' => $position,
                     ]);
 
-                    $fromDate->addMonth();
+                    $position->addMonth();
                 }
             });
+    }
+
+    protected function isBeforeStart(Carbon $start, Carbon $position): bool
+    {
+        return $position < $start;
     }
 }

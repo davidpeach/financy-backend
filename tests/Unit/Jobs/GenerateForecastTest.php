@@ -11,7 +11,7 @@ use Tests\TestCase;
 class GenerateForecastTest extends TestCase
 {
     /** @test */
-    public function it_generates_a_financial_forecast_based_on_financial_commitments_between_two_dates()
+    public function it_generates_a_financial_forecast_based_on_financial_commitments_between_now_and_a_future_date()
     {
         Commitment::factory()
             ->count(2)
@@ -21,16 +21,13 @@ class GenerateForecastTest extends TestCase
             ))
             ->create();
 
+        $this->travelTo(new Carbon('11th January 2021'));
+
         GenerateForecast::dispatch(
-            new Carbon('1st January 2021'),
-            new Carbon('31st February 2021'),
+            until: new Carbon('19th February 2021'),
         );
 
         $this->assertDatabaseHas('transactions', [
-            'name' => 'My £200 monthly commitment',
-            'amount' => 20000,
-            'date' => (new Carbon('10th January 2021'))->format('Y-m-d H:i:s'),
-        ])->assertDatabaseHas('transactions', [
             'name' => 'My £100 monthly commitment',
             'amount' => 10000,
             'date' => (new Carbon('20th January 2021'))->format('Y-m-d H:i:s'),
@@ -38,7 +35,13 @@ class GenerateForecastTest extends TestCase
             'name' => 'My £200 monthly commitment',
             'amount' => 20000,
             'date' => (new Carbon('10th February 2021'))->format('Y-m-d H:i:s'),
-        ])->assertDatabaseHas('transactions', [
+        ]);
+
+        $this->assertDatabaseMissing('transactions', [
+            'name' => 'My £200 monthly commitment',
+            'amount' => 20000,
+            'date' => (new Carbon('10th January 2021'))->format('Y-m-d H:i:s'),
+        ])->assertDatabaseMissing('transactions', [
             'name' => 'My £100 monthly commitment',
             'amount' => 10000,
             'date' => (new Carbon('20th February 2021'))->format('Y-m-d H:i:s'),
