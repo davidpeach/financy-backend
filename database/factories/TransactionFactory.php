@@ -13,10 +13,12 @@ class TransactionFactory extends Factory
     public function definition(): array
     {
         return [
+            'amount' => 10000,
             'date' => $this->faker->date,
             'commitment_id' => function () {
                 return Commitment::factory()->create()->id;
             },
+            'name' => $this->faker->sentence,
         ];
     }
 }

@@ -32,6 +32,8 @@ class GenerateForecast implements ShouldQueue
      */
     public function handle()
     {
+        Transaction::where('date', '>', now())->delete();
+        
         Commitment::orderBy('recurring_date', 'asc')
             ->get()
             ->each(function (Commitment $commitment) {
