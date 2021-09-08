@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Commitment extends Model
 {
@@ -23,13 +24,25 @@ class Commitment extends Model
                 continue;
             }
 
-            Transaction::create([
-                'name' => $this->name,
-                'amount' => $this->amount,
-                'date' => $position,
-            ]);
+            $this->createTransaction($position);
 
             $position->addMonth();
         }
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    private function createTransaction(Carbon $date)
+    {
+        $this->transactions()->save(
+            Transaction::make([
+                'name' => $this->name,
+                'amount' => $this->amount,
+                'date' => $date,
+            ])
+        );
     }
 }

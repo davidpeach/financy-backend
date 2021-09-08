@@ -14,6 +14,7 @@ class CreateTransactionsTable extends Migration
             $table->unsignedInteger('amount');
             $table->string('name');
             $table->timestamp('date');
+            $table->unsignedBigInteger('commitment_id')->nullable();
 
             $table->timestamps();
         });

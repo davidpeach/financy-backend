@@ -22,6 +22,8 @@ class CommitmentFactory extends Factory
     public function definition()
     {
         return [
+            'name' => $this->faker->word,
+            'amount' => 7777,
             'recurring_date' => 1,
         ];
     }
