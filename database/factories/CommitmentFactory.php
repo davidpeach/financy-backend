@@ -25,6 +25,7 @@ class CommitmentFactory extends Factory
             'name' => $this->faker->word,
             'amount' => 7777,
             'recurring_date' => 1,
+            'start_date' => now(),
         ];
     }
 }

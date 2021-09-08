@@ -89,4 +89,41 @@ class GenerateForecastTest extends TestCase
             'date' => (new Carbon('20th February 2021'))->format('Y-m-d H:i:s'),
         ]);
     }
+
+    /** @test */
+    public function commitments_can_have_a_start_date_from_which_to_begin()
+    {
+        // Given we have a known today date
+        $this->travelTo(new Carbon('1st January 2021'));
+        // And we have a commitment that will start on a particular date
+        $commitment = Commitment::factory()
+            ->create([
+                'recurring_date' => 15,
+                'start_date' => new Carbon('15th February 2021')
+            ]);
+
+        // When we generate transactions
+        GenerateForecast::dispatch(
+            until: new Carbon('31st March 2021'),
+        );
+
+        // We should not see transaction for before the start date
+        $this->assertDatabaseMissing('transactions', [
+            'name' => $commitment->name,
+            'amount' => $commitment->amount,
+            'date' => (new Carbon('15th January 2021'))->format('Y-m-d H:i:s'),
+        ]);
+
+        $this->assertDatabaseHas('transactions', [
+            'name' => $commitment->name,
+            'amount' => $commitment->amount,
+            'date' => (new Carbon('15th February 2021'))->format('Y-m-d H:i:s'),
+        ]);
+
+        $this->assertDatabaseHas('transactions', [
+            'name' => $commitment->name,
+            'amount' => $commitment->amount,
+            'date' => (new Carbon('15th March 2021'))->format('Y-m-d H:i:s'),
+        ]);
+    }
 }

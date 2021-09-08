@@ -24,6 +24,11 @@ class Commitment extends Model
                 continue;
             }
 
+            if ($position < $this->start_date) {
+                $position->addMonth();
+                continue;
+            }
+
             $this->createTransaction($position);
 
             $position->addMonth();
