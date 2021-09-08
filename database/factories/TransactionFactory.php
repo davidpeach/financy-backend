@@ -19,6 +19,7 @@ class TransactionFactory extends Factory
                 return Commitment::factory()->create()->id;
             },
             'name' => $this->faker->sentence,
+            'closing_balance' => 10000,
         ];
     }
 }

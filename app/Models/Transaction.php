@@ -13,6 +13,7 @@ class Transaction extends Model
         'amount',
         'name',
         'date',
+        'closing_balance',
     ];
 
     protected $dates = ['date'];

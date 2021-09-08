@@ -33,11 +33,23 @@ class GenerateForecast implements ShouldQueue
     public function handle()
     {
         Transaction::where('date', '>', now())->delete();
-        
+
+        $latestTransaction = Transaction::latest('date')->first();
+
         Commitment::orderBy('recurring_date', 'asc')
             ->get()
             ->each(function (Commitment $commitment) {
                 $commitment->generateTransactionsUntil($this->until);
             });
+
+        $latestBalance = $latestTransaction->closing_balance;
+
+        $transactions = Transaction::where('date', '>', now())->orderBy('date', 'asc')->get();
+
+        $transactions->map(function (Transaction $transaction) use (&$latestBalance) {
+            $transaction->update([
+                'closing_balance' => $latestBalance += $transaction->amount,
+            ]);
+        });
     }
 }
