@@ -11,6 +11,11 @@ class CreateCommitmentsTable extends Migration
         Schema::create('commitments', function (Blueprint $table) {
             $table->bigIncrements('id');
 
+            $table->unsignedBigInteger('account_id');
+
+            $table->unsignedBigInteger('recipient_id');
+            $table->string('recipient_type');
+
             $table->string('name');
             $table->integer('amount');
             $table->integer('recurring_date');

@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Account;
 use App\Models\Commitment;
+use App\Models\Payee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CommitmentFactory extends Factory
@@ -21,11 +23,26 @@ class CommitmentFactory extends Factory
      */
     public function definition()
     {
+        if (rand(0, 1)) {
+            $recipient = Payee::factory()->create();
+        } else {
+            $recipient = Account::factory()->create();
+        }
+
         return [
             'name' => $this->faker->word,
             'amount' => 7777,
             'recurring_date' => 1,
             'start_date' => now(),
+            'account_id' => function () {
+                return Account::factory()->create()->id;
+            },
+            'recipient_id' => function () use ($recipient) {
+                return $recipient->id;
+            },
+            'recipient_type' => function () use ($recipient) {
+                return get_class($recipient);
+            }
         ];
     }
 }

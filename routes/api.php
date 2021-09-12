@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BalanceTransferController;
 use App\Http\Controllers\CommitmentController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
@@ -22,7 +23,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('auth')->group(function() {
     Route::get('/transactions', [TransactionController::class, 'index'])->name('api.transaction.index');
-    Route::post('/transactions', [TransactionController::class, 'store'])->name('api.transaction.store');
+
+    Route::post('{account}/transactions', [TransactionController::class, 'store'])->name('api.transaction.store');
 
     Route::get('/commitments', [CommitmentController::class, 'index'])->name('api.commitment.index');
+
+    Route::post('/accounts/transfer', [BalanceTransferController::class, 'store']);
 });

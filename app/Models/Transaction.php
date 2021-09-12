@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Transaction extends Model
 {
@@ -14,6 +16,9 @@ class Transaction extends Model
         'name',
         'date',
         'closing_balance',
+        'account_id',
+        'recipient_id',
+        'recipient_type',
     ];
 
     protected $dates = ['date'];
@@ -29,5 +34,15 @@ class Transaction extends Model
         }
 
         $this->attributes['amount'] = $amount;
+    }
+
+    public function commitment(): BelongsTo
+    {
+        return $this->belongsTo(Commitment::class);
+    }
+
+    public function recipient(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

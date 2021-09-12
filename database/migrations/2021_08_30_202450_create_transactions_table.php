@@ -10,13 +10,17 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
-
             $table->unsignedInteger('amount');
             $table->string('name');
             $table->timestamp('date');
-            $table->unsignedBigInteger('commitment_id')->nullable();
-            $table->integer('closing_balance')->nullable();
 
+            $table->unsignedBigInteger('commitment_id')->nullable();
+            $table->unsignedBigInteger('account_id');
+
+            $table->unsignedBigInteger('recipient_id');
+            $table->string('recipient_type');
+
+            $table->integer('closing_balance')->nullable();
             $table->timestamps();
         });
     }

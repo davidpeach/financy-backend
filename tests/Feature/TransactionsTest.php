@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Account;
+use App\Models\Payee;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Sequence;
@@ -49,23 +51,33 @@ class TransactionsTest extends TestCase
     {
         $this->signIn();
 
-        $this->json('post', route('api.transaction.store'), [
+        $account = Account::factory()->create();
+
+        $recipient = Payee::factory()->create();
+
+        $this->json('post', route('api.transaction.store', [$account]), [
             'amount' => '10.00',
             'name' => 'A 10 pound item',
             'date' => '2021-09-06 07:55:00',
+            'recipient_id' => $recipient->id,
+            'recipient_type' => get_class($recipient),
         ]);
 
         $this->assertDatabaseHas('transactions', [
             'amount' => 1000,
             'name' => 'A 10 pound item',
             'date' => '2021-09-06 07:55:00',
+            'account_id' => $account->id,
+            'commitment_id' => null,
         ]);
     }
 
     /** @test */
     public function transactions_cannot_be_created_be_guests()
     {
-        $response = $this->json('post', route('api.transaction.store'), [
+        $account = Account::factory()->create();
+
+        $response = $this->json('post', route('api.transaction.store', [$account]), [
             'amount' => '10.00',
             'name' => 'A 10 pound item',
             'date' => '2021-09-06 07:55:00',

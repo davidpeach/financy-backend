@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\TransactionResource;
+use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -20,8 +21,12 @@ class TransactionController extends Controller
         );
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Account $account)
     {
+        $request->merge([
+            'account_id' => $account->id
+        ]);
+
         Transaction::create($request->all());
     }
 }
