@@ -11,8 +11,6 @@ class AccountTest extends TestCase
     /** @test */
     public function i_can_transfer_money_from_one_account_to_another()
     {
-        $this->withoutExceptionHandling();
-
         $this->signIn();
 
         $billsAccount = Account::factory()->create(['name' => 'Bills Account', 'balance' => 50000]);

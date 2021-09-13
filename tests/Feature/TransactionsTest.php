@@ -12,9 +12,11 @@ use Tests\TestCase;
 class TransactionsTest extends TestCase
 {
     /** @test */
-    public function transactions_can_be_returned_in_order_of_newest_first()
+    public function account_transactions_can_be_returned_in_order_of_newest_first()
     {
         $this->signIn();
+
+        $account = Account::factory()->create();
 
         Transaction::factory()
             ->count(5)
@@ -25,9 +27,15 @@ class TransactionsTest extends TestCase
                 ['amount' => 1000, 'name' => '10 pound item', 'date' => new Carbon('25th January 2000 17:00:00')],
                 ['amount' => 7500, 'name' => '75 pound item', 'date' => new Carbon('20th January 2000 17:00:00')],
             ))
-            ->create();
+            ->create(['account_id' => $account->id]);
 
-        $response = $this->json('get', route('api.transaction.index'));
+        Transaction::factory()->create([
+            'amount' => 500,
+            'name' => '5 pound item',
+            'date' => new Carbon('5th January 2000 17:00:00'),
+        ]);
+
+        $response = $this->json('get', route('api.transaction.index', [$account]));
 
         $response->assertJson(['data' => [
             ['amount' => '£10.00', 'name' => '10 pound item', 'date' => '25th January 2000 17:00:00'],
@@ -36,12 +44,18 @@ class TransactionsTest extends TestCase
             ['amount' => '£10.00', 'name' => '10 pound item', 'date' => '10th January 2000 17:00:00'],
             ['amount' => '£25.00', 'name' => '25 pound item', 'date' => '1st January 2000 17:00:00'],
         ]]);
+
+        $response->assertJsonMissing([
+            'amount' => '£5.00',
+            'name' => '5 pound item',
+            'date' => '5th January 2000 17:00:00'
+        ]);
     }
 
     /** @test */
     public function transactions_cannot_be_returned_to_guests()
     {
-        $response = $this->json('get', route('api.transaction.index'));
+        $response = $this->json('get', route('api.transaction.index', [Account::factory()->create()]));
 
         $response->assertStatus(401);
     }
@@ -91,6 +105,8 @@ class TransactionsTest extends TestCase
     {
         $this->signIn();
 
+        $account = Account::factory()->create();
+
         Transaction::factory()
             ->count(3)
             ->state(new Sequence(
@@ -98,9 +114,9 @@ class TransactionsTest extends TestCase
                 ['amount' => 7500, 'name' => '75 pound item', 'date' => new Carbon('5th January 2000 17:00:00')],
                 ['amount' => 1000, 'name' => '10 pound item', 'date' => new Carbon('10th January 2000 17:00:00')],
             ))
-            ->create();
+            ->create(['account_id' => $account->id]);
 
-        $response = $this->json('get', route('api.transaction.index', ['from' => '2000-01-05']));
+        $response = $this->json('get', route('api.transaction.index', ['account' => $account, 'from' => '2000-01-05']));
 
         $response->assertJson(['data' => [
             ['amount' => '£10.00', 'name' => '10 pound item', 'date' => '10th January 2000 17:00:00'],

@@ -16,8 +16,6 @@ class GenerateForecastTest extends TestCase
     /** @test */
     public function it_regenerates_a_financial_forecast_based_on_financial_commitments_between_now_and_a_future_date()
     {
-        $this->withoutExceptionHandling();
-
         // Given today is set
         $this->travelTo(new Carbon('11th January 2021'));
 
