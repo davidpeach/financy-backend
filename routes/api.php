@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function() {
 
     Route::post('{account}/transactions', [TransactionController::class, 'store'])->name('api.transaction.store');
 
-    Route::get('/commitments', [CommitmentController::class, 'index'])->name('api.commitment.index');
+    Route::get('{account}/commitments', [CommitmentController::class, 'index'])->name('api.commitment.index');
 
     Route::post('/accounts/transfer', [BalanceTransferController::class, 'store']);
 });

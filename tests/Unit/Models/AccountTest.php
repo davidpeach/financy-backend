@@ -3,6 +3,7 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Account;
+use App\Models\Commitment;
 use App\Models\Transaction;
 use Tests\TestCase;
 
@@ -29,5 +30,15 @@ class AccountTest extends TestCase
         Transaction::factory()->count(3)->create(['account_id' => $billsAccount->id]);
 
         $this->assertCount(3, $billsAccount->transactions);
+    }
+
+    /** @test */
+    public function an_account_can_have_commitments()
+    {
+        $billsAccount = Account::factory()->create();
+
+        Commitment::factory()->count(3)->create(['account_id' => $billsAccount->id]);
+
+        $this->assertCount(3, $billsAccount->commitments);
     }
 }
