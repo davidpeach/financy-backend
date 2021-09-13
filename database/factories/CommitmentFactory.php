@@ -37,6 +37,7 @@ class CommitmentFactory extends Factory
             'account_id' => function () {
                 return Account::factory()->create()->id;
             },
+            'type' => 'OUTGOING',
             'recipient_id' => function () use ($recipient) {
                 return $recipient->id;
             },

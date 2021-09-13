@@ -19,6 +19,7 @@ class GenerateForecastTest extends TestCase
         // Given today is set
         $this->travelTo(new Carbon('11th January 2021'));
 
+        // and we have an account
         $account = Account::factory()->create();
 
         // And we have a passed transaction from the day before
@@ -27,7 +28,7 @@ class GenerateForecastTest extends TestCase
                 'date' => (new Carbon('10th January 2021')),
                 'commitment_id' => null,
                 'name' => 'My Past Transaction',
-                'closing_balance' => 10000,
+                'closing_balance' => 100000,
                 'account_id' => $account->id,
             ]);
 
@@ -40,7 +41,7 @@ class GenerateForecastTest extends TestCase
                 'account_id' => $account->id,
             ]);
 
-        // And known commitments.
+        // And known payee commitments.
         $recipient100 = Payee::factory()->create();
         $recipient200 = Payee::factory()->create();
         Commitment::factory()
@@ -63,6 +64,17 @@ class GenerateForecastTest extends TestCase
             ))
             ->create(['account_id' => $account->id]);
 
+        // and an INCOMING wage
+        Commitment::factory()
+            ->create([
+                'name' => 'My £2000 monthly wages',
+                'amount' => 200000,
+                'recurring_date' => 3,
+                'recipient_id' => $account->id,
+                'recipient_type' => get_class($account),
+                'account_id' => $account->id,
+                'type' => 'INCOMING',
+            ]);
 
 
         // When generating a new forecast till a known date
@@ -76,7 +88,7 @@ class GenerateForecastTest extends TestCase
             'amount' => $pastTransaction->amount,
             'date' => $pastTransaction->date,
             'account_id' => $account->id,
-            'closing_balance' => 10000,
+            'closing_balance' => 100000,
         ]);
 
         // New transactions between now and until date are created.
@@ -85,13 +97,19 @@ class GenerateForecastTest extends TestCase
             'amount' => 20000,
             'date' => (new Carbon('20th January 2021'))->format('Y-m-d H:i:s'),
             'account_id' => $account->id,
-            'closing_balance' => 30000,
+            'closing_balance' => 80000,
+        ])->assertDatabaseHas('transactions', [
+            'name' => 'My £2000 monthly wages',
+            'amount' => 200000,
+            'date' => (new Carbon('3rd February 2021'))->format('Y-m-d H:i:s'),
+            'account_id' => $account->id,
+            'closing_balance' => 280000,
         ])->assertDatabaseHas('transactions', [
             'name' => 'My £100 monthly commitment',
             'amount' => 10000,
             'date' => (new Carbon('10th February 2021'))->format('Y-m-d H:i:s'),
             'account_id' => $account->id,
-            'closing_balance' => 40000,
+            'closing_balance' => 270000,
         ]);
 
         // The future transaction should now be gone

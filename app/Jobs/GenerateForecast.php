@@ -46,9 +46,15 @@ class GenerateForecast implements ShouldQueue
             ->orderBy('date', 'asc')
             ->get()
             ->map(function (Transaction $transaction) use (&$latestBalance) {
-            $transaction->update([
-                'closing_balance' => $latestBalance += $transaction->amount,
-            ]);
-        });
+                if ($transaction->isOutgoing()) {
+                    $transaction->update([
+                        'closing_balance' => $latestBalance -= $transaction->amount,
+                    ]);
+                } else {
+                    $transaction->update([
+                        'closing_balance' => $latestBalance += $transaction->amount,
+                    ]);
+                }
+            });
     }
 }

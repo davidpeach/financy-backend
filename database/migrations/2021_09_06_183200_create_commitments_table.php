@@ -16,6 +16,11 @@ class CreateCommitmentsTable extends Migration
             $table->unsignedBigInteger('recipient_id');
             $table->string('recipient_type');
 
+            $table->enum('type', [
+                'OUTGOING',
+                'INCOMING',
+            ]);
+
             $table->string('name');
             $table->integer('amount');
             $table->integer('recurring_date');

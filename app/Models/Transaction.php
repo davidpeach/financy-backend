@@ -45,4 +45,14 @@ class Transaction extends Model
     {
         return $this->morphTo();
     }
+
+    public function isOutgoing()
+    {
+        return $this->commitment->type === 'OUTGOING';
+    }
+
+    public function isIncoming()
+    {
+        return $this->commitment->type === 'INCOMING';
+    }
 }

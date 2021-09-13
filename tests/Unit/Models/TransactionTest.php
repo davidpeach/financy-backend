@@ -32,4 +32,26 @@ class TransactionTest extends TestCase
 
         $this->assertEquals($recipient->id, $transaction->recipient->id);
     }
+
+    /** @test */
+    public function a_transaction_knows_if_it_is_outgoing()
+    {
+        $commitment = Commitment::factory()->create([
+            'type' => 'OUTGOING',
+        ]);
+        $transaction = Transaction::factory()->create(['commitment_id' => $commitment->id]);
+
+        $this->assertTrue($transaction->isOutgoing());
+    }
+
+    /** @test */
+    public function a_transaction_knows_if_it_is_incoming()
+    {
+        $commitment = Commitment::factory()->create([
+            'type' => 'INCOMING',
+        ]);
+        $transaction = Transaction::factory()->create(['commitment_id' => $commitment->id]);
+
+        $this->assertTrue($transaction->isIncoming());
+    }
 }
