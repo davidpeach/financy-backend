@@ -8,12 +8,14 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Tests\TestCase;
 
-class ForecastGenerationCommandTest extends TestCase
+class ForecastShowCommandTest extends TestCase
 {
     /** @test */
-    public function it_generates_the_correct_forecast_when_calling_the_command()
+    public function it_generates_the_correct_forecast_for_future_transactions_when_calling_the_command()
     {
         $commitment = Commitment::factory()->create(['type' => 'OUTGOING']);
+
+        $this->travelTo(new Carbon('2nd January 2000 17:00:00'));
 
         Transaction::factory()
             ->count(5)
@@ -62,13 +64,6 @@ class ForecastGenerationCommandTest extends TestCase
             'Closing Balance',
             'Type',
         ], [
-            [
-                '£25.00',
-                '25 pound item',
-                '1st January 2000 17:00:00',
-                'closing_balance' => '£10.00',
-                'type' => 'OUTGOING',
-            ],
             [
                 '£10.00',
                 '10 pound item',

@@ -40,7 +40,9 @@ class FinancyForecastShowCommand extends Command
     public function handle()
     {
         $transactions = TransactionResource::collection(
-            Transaction::orderBy('date', 'asc')->get()
+            Transaction::where('date', '>', now())
+                ->orderBy('date', 'asc')
+                ->get()
         );
 
         $this->table(
