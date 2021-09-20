@@ -13,8 +13,8 @@ class CreateCommitmentsTable extends Migration
 
             $table->unsignedBigInteger('account_id');
 
-            $table->unsignedBigInteger('recipient_id');
-            $table->string('recipient_type');
+            $table->unsignedBigInteger('recipient_id')->nullable();
+            $table->string('recipient_type')->nullable();
 
             $table->enum('type', [
                 'OUTGOING',

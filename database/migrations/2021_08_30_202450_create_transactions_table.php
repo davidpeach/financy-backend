@@ -17,8 +17,8 @@ class CreateTransactionsTable extends Migration
             $table->unsignedBigInteger('commitment_id')->nullable();
             $table->unsignedBigInteger('account_id');
 
-            $table->unsignedBigInteger('recipient_id');
-            $table->string('recipient_type');
+            $table->unsignedBigInteger('recipient_id')->nullable();
+            $table->string('recipient_type')->nullable();
 
             $table->integer('closing_balance')->nullable();
             $table->timestamps();

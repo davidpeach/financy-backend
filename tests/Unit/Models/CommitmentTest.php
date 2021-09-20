@@ -58,7 +58,7 @@ class CommitmentTest extends TestCase
     }
 
     /** @test */
-    public function a_commitment_has_an_account_recipient()
+    public function an_outgoing_commitment_has_an_account_recipient()
     {
         $billsAccount = Account::factory()->create();
         $savingsAccount = Account::factory()->create();
@@ -66,8 +66,24 @@ class CommitmentTest extends TestCase
             'account_id' => $billsAccount->id,
             'recipient_id' => $savingsAccount->id,
             'recipient_type' => get_class($savingsAccount),
+            'type' => 'OUTGOING',
         ]);
 
         $this->assertEquals($savingsAccount->id, $commitment->recipient->id);
+    }
+
+    /** @test */
+    public function an_incoming_commitment_does_not_have_an_account_recipient()
+    {
+        $billsAccount = Account::factory()->create();
+        $savingsAccount = Account::factory()->create();
+        $commitment = Commitment::factory()->create([
+            'account_id' => $billsAccount->id,
+            'recipient_id' => null,
+            'recipient_type' => null,
+            'type' => 'INCOMING',
+        ]);
+
+        $this->assertNull($commitment->recipient);
     }
 }
