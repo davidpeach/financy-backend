@@ -44,7 +44,7 @@ class FinancyForecastShowCommand extends Command
         );
 
         $this->table(
-            ['Amount', 'Name'],
+            ['Amount', 'Name', 'Date', 'Closing Balance', 'Type'],
             $transactions->toArray(request())
         );
     }

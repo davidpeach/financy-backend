@@ -13,6 +13,8 @@ class TransactionResource extends JsonResource
             'amount' => MoneyFormatter::format($this->amount),
             'name' => $this->name,
             'date' => $this->date->format('jS F Y H:i:s'),
+            'closing_balance' => MoneyFormatter::format($this->closing_balance),
+            'type' => $this->commitment->type,
         ];
     }
 }
