@@ -172,4 +172,50 @@ class GenerateForecastTest extends TestCase
             'date' => (new Carbon('15th March 2021'))->format('Y-m-d H:i:s'),
         ]);
     }
+
+    /** @test */
+    public function a_forecast_wont_generate_transactions_for_a_commitment_past_a_commitments_end_date()
+    {
+        // Given we have a known today date
+        $this->travelTo(new Carbon('1st January 2021'));
+        // And we have a commitment that will start on a particular date
+        // and end on another date
+        $commitment = Commitment::factory()
+            ->create([
+                'recurring_date' => 15,
+                'start_date' => new Carbon('15th January 2021'),
+                'end_date' => new Carbon('15th March 2021'),
+            ]);
+
+        // When we generate transactions
+        GenerateForecast::dispatch(
+            until: new Carbon('31st April 2021'),
+        );
+
+        // We should see the correct month transactions
+        $this->assertDatabaseHas('transactions', [
+            'name' => $commitment->name,
+            'amount' => $commitment->amount,
+            'date' => (new Carbon('15th January 2021'))->format('Y-m-d H:i:s'),
+        ]);
+
+        $this->assertDatabaseHas('transactions', [
+            'name' => $commitment->name,
+            'amount' => $commitment->amount,
+            'date' => (new Carbon('15th February 2021'))->format('Y-m-d H:i:s'),
+        ]);
+
+        $this->assertDatabaseHas('transactions', [
+            'name' => $commitment->name,
+            'amount' => $commitment->amount,
+            'date' => (new Carbon('15th March 2021'))->format('Y-m-d H:i:s'),
+        ]);
+
+        // But we should not see transaction for after the end date
+        $this->assertDatabaseMissing('transactions', [
+            'name' => $commitment->name,
+            'amount' => $commitment->amount,
+            'date' => (new Carbon('15th April 2021'))->format('Y-m-d H:i:s'),
+        ]);
+    }
 }

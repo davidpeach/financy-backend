@@ -25,6 +25,7 @@ class CreateCommitmentsTable extends Migration
             $table->integer('amount');
             $table->integer('recurring_date');
             $table->timestamp('start_date');
+            $table->timestamp('end_date');
             $table->timestamps();
         });
     }

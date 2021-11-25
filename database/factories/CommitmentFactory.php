@@ -34,6 +34,7 @@ class CommitmentFactory extends Factory
             'amount' => 7777,
             'recurring_date' => 1,
             'start_date' => now(),
+            'end_date' => now()->addMonths(6),
             'account_id' => function () {
                 return Account::factory()->create()->id;
             },

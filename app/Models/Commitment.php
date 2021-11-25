@@ -30,6 +30,10 @@ class Commitment extends Model
                 continue;
             }
 
+            if ($position > $this->end_date) {
+                return;
+            }
+
             $this->createTransaction($position);
 
             $position->addMonth();
